@@ -1,4 +1,3 @@
-
 {
   "short_name": "CNC Pro",
   "name": "CNC Controller Pro",
@@ -10,9 +9,10 @@
       "purpose": "any maskable"
     }
   ],
-  "start_url": ".",
+  "start_url": "./",
   "display": "standalone",
   "theme_color": "#0f172a",
   "background_color": "#0f172a",
-  "orientation": "portrait"
+  "orientation": "portrait",
+  "scope": "./"
 }

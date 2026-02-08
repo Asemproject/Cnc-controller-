@@ -1,5 +1,4 @@
-
-const CACHE_NAME = 'cnc-pro-offline-v3';
+const CACHE_NAME = 'cnc-pro-v4';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -8,18 +7,15 @@ const STATIC_ASSETS = [
   'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap'
 ];
 
-// Install Event: Cache static assets
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
-      console.log('Caching static assets');
       return cache.addAll(STATIC_ASSETS);
     })
   );
   self.skipWaiting();
 });
 
-// Activate Event: Cleanup old caches
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => {
@@ -31,15 +27,12 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// Fetch Event: Cache-First strategy
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
 
   event.respondWith(
     caches.match(event.request).then(cachedResponse => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
+      if (cachedResponse) return cachedResponse;
 
       return fetch(event.request).then(networkResponse => {
         if (networkResponse && networkResponse.status === 200) {
@@ -50,6 +43,7 @@ self.addEventListener('fetch', event => {
         }
         return networkResponse;
       }).catch(() => {
+        // Jika offline dan mencoba mengakses halaman, kembalikan index.html
         if (event.request.mode === 'navigate') {
           return caches.match('./index.html');
         }
