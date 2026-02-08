@@ -1,0 +1,7 @@
+{
+  "name": "CNC Controller Pro",
+  "description": "A modern, minimalist CNC controller for FluidNC, GRBL, and grblHAL supporting USB, Bluetooth, and WiFi connectivity.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
