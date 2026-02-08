@@ -1,15 +1,14 @@
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Bluetooth, Usb, Wifi, Power, Settings, Terminal as TerminalIcon, Play, Square, Pause, Cpu, Activity, LayoutGrid, WifiOff, Globe, Image as ImageIcon, Send } from 'lucide-react';
-import { ConnectionType, MachineStatus, ConnectionState } from './types';
-import { DRODisplay } from './components/DRODisplay';
-import { ControlPad } from './components/ControlPad';
-import { Terminal } from './components/Terminal';
-import { SpindleControl } from './components/SpindleControl';
-import { ImageToGcode } from './components/ImageToGcode';
-import { GcodeSender } from './components/GcodeSender';
-import { ZProbeControl, AxisCalibration } from './components/ProbeCalibration';
-import { cncService } from './services/ConnectionService';
+import { ConnectionType, MachineStatus, ConnectionState } from './types.ts';
+import { DRODisplay } from './components/DRODisplay.tsx';
+import { ControlPad } from './components/ControlPad.tsx';
+import { Terminal } from './components/Terminal.tsx';
+import { SpindleControl } from './components/SpindleControl.tsx';
+import { ImageToGcode } from './components/ImageToGcode.tsx';
+import { GcodeSender } from './components/GcodeSender.tsx';
+import { ZProbeControl, AxisCalibration } from './components/ProbeCalibration.tsx';
+import { cncService } from './services/ConnectionService.ts';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'controls' | 'sender' | 'converter' | 'terminal' | 'settings'>('controls');
@@ -137,7 +136,6 @@ const App: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen max-h-screen overflow-hidden bg-[#0a0f1d] text-slate-200 font-sans">
-      {/* Dynamic Header */}
       <header className="px-6 pt-10 pb-4 bg-slate-900/50 backdrop-blur-lg border-b border-slate-800 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
           <div className={`p-2 rounded-xl shadow-lg ${connection.connected ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`}>
@@ -170,22 +168,16 @@ const App: React.FC = () => {
         </button>
       </header>
 
-      {/* Content Area */}
       <main className="flex-1 overflow-hidden relative">
-        
-        {/* Controls Tab */}
         {activeTab === 'controls' && (
           <div className="h-full overflow-y-auto p-6 space-y-6 pb-24 animate-in fade-in duration-300">
             <DRODisplay status={status} />
-            
             <div className="bg-slate-900/40 rounded-[2.5rem] border border-slate-800/60 p-6 shadow-2xl">
                <ControlPad onJog={handleJog} onCommand={sendCommand} />
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                <SpindleControl currentSpeed={status.spindle} onCommand={sendCommand} />
                <ZProbeControl onCommand={sendCommand} isConnected={connection.connected} />
-
                <div className="space-y-4">
                  <div className="bg-slate-900/80 rounded-3xl p-5 border border-slate-800">
                     <div className="flex items-center gap-2 mb-3">
@@ -202,7 +194,6 @@ const App: React.FC = () => {
                       <span className="text-white font-mono">{status.feed} mm/min</span>
                     </div>
                  </div>
-
                  <div className="bg-slate-900/80 rounded-3xl p-5 border border-slate-800">
                     <div className="flex items-center gap-2 mb-3">
                       <LayoutGrid size={14} className="text-emerald-400" />
@@ -217,36 +208,27 @@ const App: React.FC = () => {
             </div>
           </div>
         )}
-
-        {/* Sender Tab */}
         {activeTab === 'sender' && (
           <div className="h-full overflow-y-auto p-6 pb-24 animate-in slide-in-from-right duration-300">
             <GcodeSender isConnected={connection.connected} onLog={addLog} />
           </div>
         )}
-
-        {/* Converter Tab */}
         {activeTab === 'converter' && (
           <div className="h-full overflow-y-auto p-6 pb-24 animate-in slide-in-from-right duration-300">
             <ImageToGcode onSendGcode={handleSendBatchGcode} />
           </div>
         )}
-
-        {/* Terminal Tab */}
         {activeTab === 'terminal' && (
           <div className="h-full p-4 pb-24 animate-in slide-in-from-right duration-300">
             <Terminal logs={logs} onSend={sendCommand} />
           </div>
         )}
-
-        {/* Settings Tab */}
         {activeTab === 'settings' && (
           <div className="h-full overflow-y-auto p-8 space-y-8 pb-24 animate-in slide-in-from-bottom duration-300">
             <div>
               <h2 className="text-2xl font-bold mb-2 uppercase tracking-tight">Setup</h2>
               <p className="text-slate-500 text-sm">Configure your machine connection and behavior.</p>
             </div>
-
             <div className="space-y-4">
               <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Connection Protocol</label>
               <div className="grid grid-cols-3 gap-2 p-1 bg-slate-900 rounded-2xl border border-slate-800">
@@ -263,7 +245,6 @@ const App: React.FC = () => {
                 ))}
               </div>
             </div>
-
             {connection.type === 'WiFi' && (
               <div className="space-y-2">
                 <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Controller IP Address</label>
@@ -276,9 +257,7 @@ const App: React.FC = () => {
                 />
               </div>
             )}
-
             <AxisCalibration onCommand={sendCommand} isConnected={connection.connected} />
-
             <div className="bg-emerald-600/10 border border-emerald-500/20 rounded-3xl p-6">
                <div className="flex items-center gap-2 mb-2">
                  <Globe size={18} className="text-emerald-400" />
@@ -292,38 +271,12 @@ const App: React.FC = () => {
         )}
       </main>
 
-      {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-slate-900/80 backdrop-blur-xl border-t border-slate-800 flex justify-around items-center px-6 pt-3 pb-8 z-[60]">
-        <NavButton 
-          active={activeTab === 'controls'} 
-          onClick={() => setActiveTab('controls')} 
-          icon={<LayoutGrid size={22} />} 
-          label="Control" 
-        />
-        <NavButton 
-          active={activeTab === 'sender'} 
-          onClick={() => setActiveTab('sender')} 
-          icon={<Send size={22} />} 
-          label="Sender" 
-        />
-        <NavButton 
-          active={activeTab === 'converter'} 
-          onClick={() => setActiveTab('converter')} 
-          icon={<ImageIcon size={22} />} 
-          label="Art" 
-        />
-        <NavButton 
-          active={activeTab === 'terminal'} 
-          onClick={() => setActiveTab('terminal')} 
-          icon={<TerminalIcon size={22} />} 
-          label="Console" 
-        />
-        <NavButton 
-          active={activeTab === 'settings'} 
-          onClick={() => setActiveTab('settings')} 
-          icon={<Settings size={22} />} 
-          label="Setup" 
-        />
+        <NavButton active={activeTab === 'controls'} onClick={() => setActiveTab('controls')} icon={<LayoutGrid size={22} />} label="Control" />
+        <NavButton active={activeTab === 'sender'} onClick={() => setActiveTab('sender')} icon={<Send size={22} />} label="Sender" />
+        <NavButton active={activeTab === 'converter'} onClick={() => setActiveTab('converter')} icon={<ImageIcon size={22} />} label="Art" />
+        <NavButton active={activeTab === 'terminal'} onClick={() => setActiveTab('terminal')} icon={<TerminalIcon size={22} />} label="Console" />
+        <NavButton active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} icon={<Settings size={22} />} label="Setup" />
       </nav>
     </div>
   );
